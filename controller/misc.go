@@ -38,6 +38,7 @@ func GetStatus(c *gin.Context) {
 			"enable_drawing":           common.DrawingEnabled,
 			"enable_data_export":       common.DataExportEnabled,
 			"data_export_default_time": common.DataExportDefaultTime,
+			"pay_address":              common.PayAddress,
 		},
 	})
 	return

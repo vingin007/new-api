@@ -10,6 +10,7 @@ const TopUp = () => {
     const [topUpCount, setTopUpCount] = useState(10);
     const [amount, setAmount] = useState(0.0);
     const [topUpLink, setTopUpLink] = useState('');
+    const [payLink, setPayLink] = useState('');
     const [userQuota, setUserQuota] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [open, setOpen] = useState(false);
@@ -125,6 +126,7 @@ const TopUp = () => {
             status = JSON.parse(status);
             if (status.top_up_link) {
                 setTopUpLink(status.top_up_link);
+                setPayLink(status.pay_address)
             }
         }
         getUserQuota().then();
@@ -221,43 +223,46 @@ const TopUp = () => {
                                     </Space>
                                 </Form>
                             </div>
-                            <div style={{marginTop: 20}}>
-                                <Divider>
-                                    在线充值
-                                </Divider>
-                                <Form>
-                                    <Form.Input
-                                        field={'redemptionCount'}
-                                        label={'实付金额：' + renderAmount()}
-                                        placeholder='充值数量'
-                                        name='redemptionCount'
-                                        type={'number'}
-                                        value={topUpCount}
-                                        onChange={async (value) => {
-                                            setTopUpCount(value);
-                                            await getAmount(value);
-                                        }}
-                                    />
-                                    <Space>
-                                        <Button type={'primary'} theme={'solid'} onClick={
-                                            async () => {
-                                                preTopUp('zfb')
-                                            }
-                                        }>
-                                            支付宝
-                                        </Button>
-                                        <Button style={{backgroundColor: 'rgba(var(--semi-green-5), 1)'}}
-                                                type={'primary'}
-                                                theme={'solid'} onClick={
-                                            async () => {
-                                                preTopUp('wx')
-                                            }
-                                        }>
-                                            微信
-                                        </Button>
-                                    </Space>
-                                </Form>
-                            </div>
+                            {
+                                payLink ?
+                                    <div style={{marginTop: 20}}>
+                                        <Divider>
+                                            在线充值
+                                        </Divider>
+                                        <Form>
+                                            <Form.Input
+                                                field={'redemptionCount'}
+                                                label={'实付金额：' + renderAmount()}
+                                                placeholder='充值数量'
+                                                name='redemptionCount'
+                                                type={'number'}
+                                                value={topUpCount}
+                                                onChange={async (value) => {
+                                                    setTopUpCount(value);
+                                                    await getAmount(value);
+                                                }}
+                                            />
+                                            <Space>
+                                                <Button type={'primary'} theme={'solid'} onClick={
+                                                    async () => {
+                                                        preTopUp('zfb')
+                                                    }
+                                                }>
+                                                    支付宝
+                                                </Button>
+                                                <Button style={{backgroundColor: 'rgba(var(--semi-green-5), 1)'}}
+                                                        type={'primary'}
+                                                        theme={'solid'} onClick={
+                                                    async () => {
+                                                        preTopUp('wx')
+                                                    }
+                                                }>
+                                                    微信
+                                                </Button>
+                                            </Space>
+                                        </Form>
+                                    </div> : null
+                            }
                         </Card>
                     </div>
 

@@ -57,7 +57,7 @@ const SiderBar = () => {
             icon: <IconKey/>
         },
         {
-            text: '兑换码',
+            text: '兑换',
             itemKey: 'redemption',
             to: '/redemption',
             icon: <IconGift/>,
@@ -70,7 +70,7 @@ const SiderBar = () => {
             icon: <IconCreditCard/>
         },
         {
-            text: '用户管理',
+            text: '用户',
             itemKey: 'user',
             to: '/user',
             icon: <IconUser/>,
@@ -83,7 +83,7 @@ const SiderBar = () => {
             icon: <IconHistogram/>
         },
         {
-            text: '数据看板',
+            text: '统计',
             itemKey: 'detail',
             to: '/detail',
             icon: <IconCalendarClock />,
