@@ -6,7 +6,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"one-api/common"
@@ -27,10 +26,6 @@ var buildFS embed.FS
 var indexPage []byte
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("file not find:" + err.Error())
-	}
 	common.SetupLogger()
 	common.SysLog("New API " + common.Version + " started")
 	if os.Getenv("GIN_MODE") != "debug" {
@@ -40,7 +35,7 @@ func main() {
 		common.SysLog("running in debug mode")
 	}
 	// Initialize SQL Database
-	err = model.InitDB()
+	err := model.InitDB()
 	if err != nil {
 		common.FatalLog("failed to initialize database: " + err.Error())
 	}

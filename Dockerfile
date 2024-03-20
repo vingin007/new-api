@@ -2,16 +2,18 @@ FROM node:16 as builder
 
 WORKDIR /build
 COPY web/package.json .
+RUN npm config set registry http://registry.npm.taobao.org
 RUN npm install
 COPY ./web .
 COPY ./VERSION .
 RUN DISABLE_ESLINT_PLUGIN='true' REACT_APP_VERSION=$(cat VERSION) npm run build
 
-FROM golang AS builder2
+FROM golang:1.19 AS builder2
 
 ENV GO111MODULE=on \
     CGO_ENABLED=1 \
-    GOOS=linux
+    GOOS=linux \
+    GOPROXY=https://goproxy.cn,direct
 
 WORKDIR /build
 ADD go.mod go.sum ./
