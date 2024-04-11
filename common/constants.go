@@ -9,14 +9,19 @@ import (
 	"github.com/google/uuid"
 )
 
+// Pay Settings
+
+var PayAddress = ""
+var CustomCallbackAddress = ""
+var EpayId = ""
+var EpayKey = ""
+var Price = 7.3
+var MinTopUp = 1
+
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
 var SystemName = "New API"
 var ServerAddress = "http://localhost:3000"
-var PayAddress = ""
-var EpayId = ""
-var EpayKey = ""
-var Price = 7.3
 var Footer = ""
 var Logo = ""
 var TopUpLink = ""
@@ -29,6 +34,7 @@ var DrawingEnabled = true
 var DataExportEnabled = true
 var DataExportInterval = 5         // unit: minute
 var DataExportDefaultTime = "hour" // unit: minute
+var DefaultCollapseSidebar = false // default value of collapse sidebar
 
 // Any options with "Secret", "Token" in its key won't be return by GetOptions
 
@@ -45,6 +51,7 @@ var PasswordRegisterEnabled = true
 var EmailVerificationEnabled = false
 var GitHubOAuthEnabled = false
 var WeChatAuthEnabled = false
+var TelegramOAuthEnabled = false
 var TurnstileCheckEnabled = false
 var RegisterEnabled = true
 
@@ -82,11 +89,15 @@ var WeChatAccountQRCodeImageURL = ""
 var TurnstileSiteKey = ""
 var TurnstileSecretKey = ""
 
+var TelegramBotToken = ""
+var TelegramBotName = ""
+
 var QuotaForNewUser = 0
 var QuotaForInviter = 0
 var QuotaForInvitee = 0
 var ChannelDisableThreshold = 5.0
 var AutomaticDisableChannelEnabled = false
+var AutomaticEnableChannelEnabled = false
 var QuotaRemindThreshold = 1000
 var PreConsumedQuota = 500
 
@@ -175,10 +186,10 @@ const (
 const (
 	ChannelTypeUnknown        = 0
 	ChannelTypeOpenAI         = 1
-	ChannelTypeAPI2D          = 2
+	ChannelTypeMidjourney     = 2
 	ChannelTypeAzure          = 3
-	ChannelTypeCloseAI        = 4
-	ChannelTypeOpenAISB       = 5
+	ChannelTypeOllama         = 4
+	ChannelTypeMidjourneyPlus = 5
 	ChannelTypeOpenAIMax      = 6
 	ChannelTypeOhMyGPT        = 7
 	ChannelTypeCustom         = 8
@@ -198,6 +209,9 @@ const (
 	ChannelTypeFastGPT        = 22
 	ChannelTypeTencent        = 23
 	ChannelTypeGemini         = 24
+	ChannelTypeMoonshot       = 25
+	ChannelTypeZhipu_v4       = 26
+	ChannelTypePerplexity     = 27
 )
 
 var ChannelBaseURLs = []string{
@@ -205,7 +219,7 @@ var ChannelBaseURLs = []string{
 	"https://api.openai.com",            // 1
 	"https://oa.api2d.net",              // 2
 	"",                                  // 3
-	"https://api.closeai-proxy.xyz",     // 4
+	"http://localhost:11434",            // 4
 	"https://api.openai-sb.com",         // 5
 	"https://api.openaimax.com",         // 6
 	"https://api.ohmygpt.com",           // 7
@@ -225,5 +239,8 @@ var ChannelBaseURLs = []string{
 	"https://api.aiproxy.io",            // 21
 	"https://fastgpt.run/api/openapi",   // 22
 	"https://hunyuan.cloud.tencent.com", //23
-	"",                                  //24
+	"https://generativelanguage.googleapis.com", //24
+	"https://api.moonshot.cn",                   //25
+	"https://open.bigmodel.cn",                  //26
+	"https://api.perplexity.ai",                 //27
 }
