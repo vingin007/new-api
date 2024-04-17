@@ -15,6 +15,7 @@ const OperationSetting = () => {
   let [inputs, setInputs] = useState({
     QuotaForNewUser: 0,
     QuotaForInviter: 0,
+    TopUpForInviter: 0,
     QuotaForInvitee: 0,
     QuotaRemindThreshold: 0,
     PreConsumedQuota: 0,
@@ -184,6 +185,9 @@ const OperationSetting = () => {
         }
         if (originInputs['QuotaForInviter'] !== inputs.QuotaForInviter) {
           await updateOption('QuotaForInviter', inputs.QuotaForInviter);
+        }
+        if (originInputs['TopUpForInviter'] !== inputs.TopUpForInviter) {
+          await updateOption('TopUpForInviter', inputs.TopUpForInviter);
         }
         if (originInputs['PreConsumedQuota'] !== inputs.PreConsumedQuota) {
           await updateOption('PreConsumedQuota', inputs.PreConsumedQuota);
@@ -544,6 +548,16 @@ const OperationSetting = () => {
               type='number'
               min='0'
               placeholder='例如：1000'
+            />
+            <Form.Input
+                label='邀请用户充值返利额度'
+                name='TopUpForInviter'
+                onChange={handleInputChange}
+                autoComplete='new-password'
+                value={inputs.TopUpForInviter}
+                type='number'
+                min='0'
+                placeholder='例如：1000'
             />
           </Form.Group>
           <Form.Button
