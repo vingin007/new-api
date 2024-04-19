@@ -146,6 +146,16 @@ func inviteUser(inviterId int) (err error) {
 	return DB.Save(user).Error
 }
 
+func InviteTopUp(inviterId int, quota int) (err error) {
+	user, err := GetUserById(inviterId, true)
+	if err != nil {
+		return err
+	}
+	user.AffQuota += quota
+	user.AffHistoryQuota += quota
+	return DB.Save(user).Error
+}
+
 func (user *User) TransferAffQuotaToQuota(quota int) error {
 	// 检查quota是否小于最小额度
 	if float64(quota) < common.QuotaPerUnit {

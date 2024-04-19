@@ -214,7 +214,7 @@ func EpayNotify(c *gin.Context) {
 			//这里给邀请该用户的用户返利
 			user, _ := model.GetUserById(topUp.UserId, true)
 			if user.InviterId > 0 && common.TopUpForInviter > 0 {
-				_ = model.IncreaseUserQuota(user.InviterId, topUp.Amount*common.TopUpForInviter)
+				_ = model.InviteTopUp(user.InviterId, topUp.Amount*common.TopUpForInviter)
 				model.RecordLog(user.InviterId, model.LogTypeSystem, fmt.Sprintf("充值返利，充值用户 :%v，充值金额: %v，返利金额：%v", user.Username, common.LogQuota(topUp.Amount*int(common.QuotaPerUnit)), common.LogQuota(topUp.Amount*common.TopUpForInviter)))
 			}
 			log.Printf("易支付回调更新用户成功 %v", topUp)
