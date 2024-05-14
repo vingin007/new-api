@@ -23,6 +23,13 @@ export const CHANNEL_OPTIONS = [
     label: 'Anthropic Claude',
   },
   {
+    key: 33,
+    text: 'AWS Claude',
+    value: 33,
+    color: 'indigo',
+    label: 'AWS Claude',
+  },
+  {
     key: 3,
     text: 'Azure OpenAI',
     value: 3,
@@ -42,6 +49,13 @@ export const CHANNEL_OPTIONS = [
     value: 24,
     color: 'orange',
     label: 'Google Gemini',
+  },
+  {
+    key: 34,
+    text: 'Cohere',
+    value: 34,
+    color: 'purple',
+    label: 'Cohere',
   },
   {
     key: 15,
@@ -72,13 +86,13 @@ export const CHANNEL_OPTIONS = [
     label: '智谱 ChatGLM',
   },
   {
-    key: 16,
+    key: 26,
     text: '智谱 GLM-4V',
     value: 26,
     color: 'purple',
     label: '智谱 GLM-4V',
   },
-  { key: 16, text: 'Moonshot', value: 25, color: 'green', label: 'Moonshot' },
+  { key: 25, text: 'Moonshot', value: 25, color: 'green', label: 'Moonshot' },
   { key: 19, text: '360 智脑', value: 19, color: 'blue', label: '360 智脑' },
   { key: 23, text: '腾讯混元', value: 23, color: 'teal', label: '腾讯混元' },
   { key: 31, text: '零一万物', value: 31, color: 'green', label: '零一万物' },

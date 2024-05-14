@@ -165,7 +165,9 @@ func DoMidjourneyHttpRequest(c *gin.Context, timeout time.Duration, fullRequestU
 		if err != nil {
 			return MidjourneyErrorWithStatusCodeWrapper(constant.MjErrorUnknown, "read_request_body_failed", http.StatusInternalServerError), nullBytes, err
 		}
-		delete(mapResult, "accountFilter")
+		if !constant.MjAccountFilterEnabled {
+			delete(mapResult, "accountFilter")
+		}
 		if !constant.MjNotifyEnabled {
 			delete(mapResult, "notifyHook")
 		}

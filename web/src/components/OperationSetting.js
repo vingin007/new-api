@@ -21,6 +21,7 @@ const OperationSetting = () => {
     PreConsumedQuota: 0,
     StreamCacheQueueLength: 0,
     ModelRatio: '',
+    CompletionRatio: '',
     ModelPrice: '',
     GroupRatio: '',
     TopUpLink: '',
@@ -39,6 +40,7 @@ const OperationSetting = () => {
     StopOnSensitiveEnabled: '',
     SensitiveWords: '',
     MjNotifyEnabled: '',
+    MjAccountFilterEnabled: '',
     MjModeClearEnabled: '',
     MjForwardUrlEnabled: '',
     DrawingEnabled: '',
@@ -68,6 +70,7 @@ const OperationSetting = () => {
         if (
           item.key === 'ModelRatio' ||
           item.key === 'GroupRatio' ||
+          item.key === 'CompletionRatio' ||
           item.key === 'ModelPrice'
         ) {
           item.value = JSON.stringify(JSON.parse(item.value), null, 2);
@@ -156,6 +159,13 @@ const OperationSetting = () => {
             return;
           }
           await updateOption('ModelRatio', inputs.ModelRatio);
+        }
+        if (originInputs['CompletionRatio'] !== inputs.CompletionRatio) {
+          if (!verifyJSON(inputs.CompletionRatio)) {
+            showError('模型补全倍率不是合法的 JSON 字符串');
+            return;
+          }
+          await updateOption('CompletionRatio', inputs.CompletionRatio);
         }
         if (originInputs['GroupRatio'] !== inputs.GroupRatio) {
           if (!verifyJSON(inputs.GroupRatio)) {
@@ -325,6 +335,12 @@ const OperationSetting = () => {
               checked={inputs.MjNotifyEnabled === 'true'}
               label='允许回调（会泄露服务器ip地址）'
               name='MjNotifyEnabled'
+              onChange={handleInputChange}
+            />
+            <Form.Checkbox
+              checked={inputs.MjAccountFilterEnabled === 'true'}
+              label='允许AccountFilter参数'
+              name='MjAccountFilterEnabled'
               onChange={handleInputChange}
             />
             <Form.Checkbox
@@ -598,6 +614,17 @@ const OperationSetting = () => {
               autoComplete='new-password'
               value={inputs.ModelRatio}
               placeholder='为一个 JSON 文本，键为模型名称，值为倍率'
+            />
+          </Form.Group>
+          <Form.Group widths='equal'>
+            <Form.TextArea
+              label='模型补全倍率（仅对自定义模型有效）'
+              name='CompletionRatio'
+              onChange={handleInputChange}
+              style={{ minHeight: 250, fontFamily: 'JetBrains Mono, Consolas' }}
+              autoComplete='new-password'
+              value={inputs.CompletionRatio}
+              placeholder='为一个 JSON 文本，键为分组名称，值为倍率'
             />
           </Form.Group>
           <Form.Group widths='equal'>
