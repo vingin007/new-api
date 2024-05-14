@@ -15,6 +15,7 @@ export default function SettingsCreditLimit(props) {
     PreConsumedQuota: '',
     QuotaForInviter: '',
     QuotaForInvitee: '',
+    TopUpForInviter: '',
   });
   const refForm = useRef();
   const [inputsRow, setInputsRow] = useState(inputs);
@@ -139,6 +140,23 @@ export default function SettingsCreditLimit(props) {
                       QuotaForInvitee: String(value),
                     })
                   }
+                />
+              </Col>
+              <Col span={6}>
+                <Form.InputNumber
+                    label={'邀请用户充值返利额度'}
+                    field={'TopUpForInviter'}
+                    step={1}
+                    min={0}
+                    suffix={'Token'}
+                    extraText={''}
+                    placeholder={'例如：1000'}
+                    onChange={(value) =>
+                        setInputs({
+                          ...inputs,
+                          TopUpForInviter: String(value),
+                        })
+                    }
                 />
               </Col>
             </Row>

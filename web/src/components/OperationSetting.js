@@ -78,7 +78,6 @@ const OperationSetting = () => {
         }
       });
       setInputs(newInputs);
-      setOriginInputs(newInputs);
     } else {
       showError(message);
     }
