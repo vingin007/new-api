@@ -1,8 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useMemo, useState } from 'react';
 import { API, copy, showError, showSuccess } from '../helpers';
 
-import { Banner, Layout, Modal, Table, Tag, Tooltip } from '@douyinfe/semi-ui';
-import { stringToColor } from '../helpers/render.js';
+import {
+  Banner,
+  Input,
+  Layout,
+  Modal,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  Popover,
+  ImagePreview,
+  Button,
+} from '@douyinfe/semi-ui';
+import {
+  IconMore,
+  IconVerify,
+  IconUploadError,
+  IconHelpCircle,
+} from '@douyinfe/semi-icons';
 import { UserContext } from '../context/User/index.js';
 import Text from '@douyinfe/semi-ui/lib/es/typography/text';
 
@@ -11,40 +28,93 @@ function renderQuotaType(type) {
   switch (type) {
     case 1:
       return (
-        <Tag color='green' size='large'>
+        <Tag color='teal' size='large'>
           按次计费
         </Tag>
       );
     case 0:
       return (
-        <Tag color='blue' size='large'>
+        <Tag color='violet' size='large'>
           按量计费
         </Tag>
       );
     default:
-      return (
-        <Tag color='white' size='large'>
-          未知
-        </Tag>
-      );
+      return '未知';
   }
 }
 
 function renderAvailable(available) {
   return available ? (
-    <Tag color='green' size='large'>
-      可用
-    </Tag>
+    <Popover
+        content={
+          <div style={{ padding: 8 }}>您的分组可以使用该模型</div>
+        }
+        position='top'
+        key={available}
+        style={{
+            backgroundColor: 'rgba(var(--semi-blue-4),1)',
+            borderColor: 'rgba(var(--semi-blue-4),1)',
+            color: 'var(--semi-color-white)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+        }}
+    >
+        <IconVerify style={{ color: 'green' }}  size="large" />
+    </Popover>
   ) : (
-    <Tooltip content='您所在的分组不可用'>
-      <Tag color='red' size='large'>
-        不可用
-      </Tag>
-    </Tooltip>
+    <Popover
+        content={
+          <div style={{ padding: 8 }}>您的分组无权使用该模型</div>
+        }
+        position='top'
+        key={available}
+        style={{
+            backgroundColor: 'rgba(var(--semi-blue-4),1)',
+            borderColor: 'rgba(var(--semi-blue-4),1)',
+            color: 'var(--semi-color-white)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+        }}
+    >
+        <IconUploadError style={{ color: '#FFA54F' }}  size="large" />
+    </Popover>
   );
 }
 
 const ModelPricing = () => {
+  const [filteredValue, setFilteredValue] = useState([]);
+  const compositionRef = useRef({ isComposition: false });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [modalImageUrl, setModalImageUrl] = useState('');
+  const [isModalOpenurl, setIsModalOpenurl] = useState(false);
+
+  const rowSelection = useMemo(
+      () => ({
+          onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+      }),
+      []
+  );
+
+  const handleChange = (value) => {
+    if (compositionRef.current.isComposition) {
+      return;
+    }
+    const newFilteredValue = value ? [value] : [];
+    setFilteredValue(newFilteredValue);
+  };
+  const handleCompositionStart = () => {
+    compositionRef.current.isComposition = true;
+  };
+
+  const handleCompositionEnd = (event) => {
+    compositionRef.current.isComposition = false;
+    const value = event.target.value;
+    const newFilteredValue = value ? [value] : [];
+    setFilteredValue(newFilteredValue);
+  };
+
   const columns = [
     {
       title: '可用性',
@@ -52,28 +122,28 @@ const ModelPricing = () => {
       render: (text, record, index) => {
         return renderAvailable(text);
       },
+      sorter: (a, b) => a.available - b.available,
     },
     {
-      title: '提供者',
-      dataIndex: 'owner_by',
-      render: (text, record, index) => {
-        return (
-          <>
-            <Tag color={stringToColor(text)} size='large'>
-              {text}
-            </Tag>
-          </>
-        );
-      },
-    },
-    {
-      title: '模型名称',
+      title: (
+        <Space>
+          <span>模型名称</span>
+          <Input
+            placeholder='模糊搜索'
+            style={{ width: 200 }}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            onChange={handleChange}
+            showClear
+          />
+        </Space>
+      ),
       dataIndex: 'model_name', // 以finish_time作为dataIndex
       render: (text, record, index) => {
         return (
           <>
             <Tag
-              color={stringToColor(record.owner_by)}
+              color='green'
               size='large'
               onClick={() => {
                 copyText(text);
@@ -84,6 +154,9 @@ const ModelPricing = () => {
           </>
         );
       },
+      onFilter: (value, record) =>
+        record.model_name.toLowerCase().includes(value.toLowerCase()),
+      filteredValue,
     },
     {
       title: '计费类型',
@@ -91,20 +164,46 @@ const ModelPricing = () => {
       render: (text, record, index) => {
         return renderQuotaType(parseInt(text));
       },
+      sorter: (a, b) => a.quota_type - b.quota_type,
     },
     {
-      title: '模型倍率',
+      title: () => (
+        <span style={{'display':'flex','alignItems':'center'}}>
+          倍率
+          <Popover
+            content={
+              <div style={{ padding: 8 }}>倍率是为了方便换算不同价格的模型<br/>点击查看倍率说明</div>
+            }
+            position='top'
+            style={{
+                backgroundColor: 'rgba(var(--semi-blue-4),1)',
+                borderColor: 'rgba(var(--semi-blue-4),1)',
+                color: 'var(--semi-color-white)',
+                borderWidth: 1,
+                borderStyle: 'solid',
+            }}
+          >
+            <IconHelpCircle
+              onClick={() => {
+                setModalImageUrl('/ratio.png');
+                setIsModalOpenurl(true);
+              }}
+            />
+          </Popover>
+        </span>
+      ),
       dataIndex: 'model_ratio',
       render: (text, record, index) => {
-        return <div>{record.quota_type === 0 ? text : 'N/A'}</div>;
-      },
-    },
-    {
-      title: '补全倍率',
-      dataIndex: 'completion_ratio',
-      render: (text, record, index) => {
-        let ratio = parseFloat(text.toFixed(3));
-        return <div>{record.quota_type === 0 ? ratio : 'N/A'}</div>;
+        let content = text;
+        let completionRatio = parseFloat(record.completion_ratio.toFixed(3));
+        content = (
+          <>
+            <Text>模型：{record.quota_type === 0 ? text : '无'}</Text>
+            <br />
+            <Text>补全：{record.quota_type === 0 ? completionRatio : '无'}</Text>
+          </>
+        );
+        return <div>{content}</div>;
       },
     },
     {
@@ -113,11 +212,11 @@ const ModelPricing = () => {
       render: (text, record, index) => {
         let content = text;
         if (record.quota_type === 0) {
-          let inputRatioPrice = record.model_ratio * 2.0 * record.group_ratio;
+          // 这里的 *2 是因为 1倍率=0.002刀，请勿删除
+          let inputRatioPrice = record.model_ratio * 2 * record.group_ratio;
           let completionRatioPrice =
             record.model_ratio *
-            record.completion_ratio *
-            2.0 *
+            record.completion_ratio * 2 *
             record.group_ratio;
           content = (
             <>
@@ -142,7 +241,7 @@ const ModelPricing = () => {
 
   const setModelsFormat = (models, groupRatio) => {
     for (let i = 0; i < models.length; i++) {
-      models[i].key = i;
+      models[i].key = models[i].model_name;
       models[i].group_ratio = groupRatio;
     }
     // sort by quota_type
@@ -150,14 +249,17 @@ const ModelPricing = () => {
       return a.quota_type - b.quota_type;
     });
 
-    // sort by owner_by, openai is max, other use localeCompare
+    // sort by model_name, start with gpt is max, other use localeCompare
     models.sort((a, b) => {
-      if (a.owner_by === 'openai') {
+      if (a.model_name.startsWith('gpt') && !b.model_name.startsWith('gpt')) {
         return -1;
-      } else if (b.owner_by === 'openai') {
+      } else if (
+        !a.model_name.startsWith('gpt') &&
+        b.model_name.startsWith('gpt')
+      ) {
         return 1;
       } else {
-        return a.owner_by.localeCompare(b.owner_by);
+        return a.model_name.localeCompare(b.model_name);
       }
     });
 
@@ -202,15 +304,38 @@ const ModelPricing = () => {
       <Layout>
         {userState.user ? (
           <Banner
-            type='info'
+            type="success"
+            fullMode={false}
+            closeIcon="null"
             description={`您的分组为：${userState.user.group}，分组倍率为：${groupRatio}`}
           />
         ) : (
           <Banner
             type='warning'
+            fullMode={false}
+            closeIcon="null"
             description={`您还未登陆，显示的价格为默认分组倍率: ${groupRatio}`}
           />
         )}
+        <br/>
+        <Banner 
+            type="info"
+            fullMode={false}
+            description={<div>按量计费费用 = 分组倍率 × 模型倍率 × （提示token数 + 补全token数 × 补全倍率）/ 500000 （单位：美元）</div>}
+            closeIcon="null"
+        />
+        <br/>
+        <Button
+          theme='light'
+          type='tertiary'
+          style={{width: 150}}
+          onClick={() => {
+            copyText(selectedRowKeys);
+          }}
+          disabled={selectedRowKeys == ""}
+        >
+          复制选中模型
+        </Button>
         <Table
           style={{ marginTop: 5 }}
           columns={columns}
@@ -220,6 +345,12 @@ const ModelPricing = () => {
             pageSize: models.length,
             showSizeChanger: false,
           }}
+          rowSelection={rowSelection}
+        />
+        <ImagePreview
+          src={modalImageUrl}
+          visible={isModalOpenurl}
+          onVisibleChange={(visible) => setIsModalOpenurl(visible)}
         />
       </Layout>
     </>

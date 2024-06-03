@@ -20,26 +20,27 @@ func (a *Adaptor) Init(info *relaycommon.RelayInfo, request dto.GeneralOpenAIReq
 
 // 定义一个映射，存储模型名称和对应的版本
 var modelVersionMap = map[string]string{
-    "gemini-1.5-pro-latest": "v1beta",
-    "gemini-ultra":   "v1beta",
+	"gemini-1.5-pro-latest":   "v1beta",
+	"gemini-1.5-flash-latest": "v1beta",
+	"gemini-ultra":            "v1beta",
 }
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
-    // 从映射中获取模型名称对应的版本，如果找不到就使用 info.ApiVersion 或默认的版本 "v1"
-    version, beta := modelVersionMap[info.UpstreamModelName]
-    if !beta {
-        if info.ApiVersion != "" {
-            version = info.ApiVersion
-        } else {
-            version = "v1"
-        }
-    }
+	// 从映射中获取模型名称对应的版本，如果找不到就使用 info.ApiVersion 或默认的版本 "v1"
+	version, beta := modelVersionMap[info.UpstreamModelName]
+	if !beta {
+		if info.ApiVersion != "" {
+			version = info.ApiVersion
+		} else {
+			version = "v1"
+		}
+	}
 
-    action := "generateContent"
-    if info.IsStream {
-        action = "streamGenerateContent"
-    }
-    return fmt.Sprintf("%s/%s/models/%s:%s", info.BaseUrl, version, info.UpstreamModelName, action), nil
+	action := "generateContent"
+	if info.IsStream {
+		action = "streamGenerateContent"
+	}
+	return fmt.Sprintf("%s/%s/models/%s:%s", info.BaseUrl, version, info.UpstreamModelName, action), nil
 }
 
 func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *relaycommon.RelayInfo) error {
