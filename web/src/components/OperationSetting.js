@@ -44,6 +44,7 @@ const OperationSetting = () => {
     MjAccountFilterEnabled: false,
     MjModeClearEnabled: false,
     MjForwardUrlEnabled: false,
+    MjActionCheckSuccessEnabled: false,
     DrawingEnabled: false,
     DataExportEnabled: false,
     DataExportDefaultTime: 'hour',
