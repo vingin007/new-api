@@ -105,7 +105,7 @@ const SiderBar = () => {
         icon: <IconCreditCard />,
       },
       {
-        text: '价格',
+        text: '定价',
         itemKey: 'pricing',
         to: '/pricing',
         icon: <IconPriceTag />,
@@ -144,7 +144,7 @@ const SiderBar = () => {
             : 'tableHiddle',
       },
       {
-        text: '异步任务',
+        text: '任务',
         itemKey: 'task',
         to: '/task',
         icon: <IconChecklistStroked />,
