@@ -25,6 +25,7 @@ const OperationSetting = () => {
     CompletionRatio: '',
     ModelPrice: '',
     GroupRatio: '',
+    UserUsableGroups: '',
     TopUpLink: '',
     ChatLink: '',
     ChatLink2: '', // 添加的新状态变量
@@ -64,6 +65,7 @@ const OperationSetting = () => {
         if (
           item.key === 'ModelRatio' ||
           item.key === 'GroupRatio' ||
+          item.key === 'UserUsableGroups' ||
           item.key === 'CompletionRatio' ||
           item.key === 'ModelPrice'
         ) {

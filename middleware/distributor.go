@@ -22,6 +22,14 @@ type ModelRequest struct {
 
 func Distribute() func(c *gin.Context) {
 	return func(c *gin.Context) {
+		allowIpsMap := c.GetStringMap("allow_ips")
+		if len(allowIpsMap) != 0 {
+			clientIp := c.ClientIP()
+			if _, ok := allowIpsMap[clientIp]; !ok {
+				abortWithOpenAiMessage(c, http.StatusForbidden, "您的 IP 不在令牌允许访问的列表中")
+				return
+			}
+		}
 		userId := c.GetInt("id")
 		var channel *model.Channel
 		channelId, ok := c.Get("specific_channel_id")
@@ -31,6 +39,20 @@ func Distribute() func(c *gin.Context) {
 			return
 		}
 		userGroup, _ := model.CacheGetUserGroup(userId)
+		tokenGroup := c.GetString("token_group")
+		if tokenGroup != "" {
+			// check common.UserUsableGroups[userGroup]
+			if _, ok := common.UserUsableGroups[tokenGroup]; !ok {
+				abortWithOpenAiMessage(c, http.StatusForbidden, fmt.Sprintf("令牌分组 %s 已被禁用", tokenGroup))
+				return
+			}
+			// check group in common.GroupRatio
+			if _, ok := common.GroupRatio[tokenGroup]; !ok {
+				abortWithOpenAiMessage(c, http.StatusForbidden, fmt.Sprintf("分组 %s 已被弃用", tokenGroup))
+				return
+			}
+			userGroup = tokenGroup
+		}
 		c.Set("group", userGroup)
 		if ok {
 			id, err := strconv.Atoi(channelId.(string))
@@ -184,19 +206,13 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 	if channel == nil {
 		return
 	}
-	c.Set("channel", channel.Type)
 	c.Set("channel_id", channel.Id)
 	c.Set("channel_name", channel.Name)
 	c.Set("channel_type", channel.Type)
-	ban := true
-	// parse *int to bool
-	if channel.AutoBan != nil && *channel.AutoBan == 0 {
-		ban = false
-	}
 	if nil != channel.OpenAIOrganization && "" != *channel.OpenAIOrganization {
 		c.Set("channel_organization", *channel.OpenAIOrganization)
 	}
-	c.Set("auto_ban", ban)
+	c.Set("auto_ban", channel.GetAutoBan())
 	c.Set("model_mapping", channel.GetModelMapping())
 	c.Set("status_code_mapping", channel.GetStatusCodeMapping())
 	c.Request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", channel.Key))
@@ -205,6 +221,8 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 	switch channel.Type {
 	case common.ChannelTypeAzure:
 		c.Set("api_version", channel.Other)
+	case common.ChannelTypeVertexAi:
+		c.Set("region", channel.Other)
 	case common.ChannelTypeXunfei:
 		c.Set("api_version", channel.Other)
 	case common.ChannelTypeGemini:
