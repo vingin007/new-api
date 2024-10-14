@@ -75,7 +75,7 @@ const SiderBar = () => {
         icon: <IconHome />,
       },
       {
-        text: 'Playground',
+        text: '演示',
         itemKey: 'playground',
         to: '/playground',
         icon: <IconCommentStroked />,
