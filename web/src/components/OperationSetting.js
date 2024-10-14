@@ -10,6 +10,7 @@ import SettingsCreditLimit from '../pages/Setting/Operation/SettingsCreditLimit.
 import SettingsMagnification from '../pages/Setting/Operation/SettingsMagnification.js';
 
 import { API, showError, showSuccess } from '../helpers';
+import SettingsChats from '../pages/Setting/Operation/SettingsChats.js';
 
 const OperationSetting = () => {
   let now = new Date();
@@ -52,6 +53,7 @@ const OperationSetting = () => {
     DataExportInterval: 5,
     DefaultCollapseSidebar: false, // 默认折叠侧边栏
     RetryTimes: 0,
+    Chats: "[]",
   });
 
   let [loading, setLoading] = useState(false);
@@ -273,6 +275,10 @@ const OperationSetting = () => {
         {/* 额度设置 */}
         <Card style={{ marginTop: '10px' }}>
           <SettingsCreditLimit options={inputs} refresh={onRefresh} />
+        </Card>
+        {/* 聊天设置 */}
+        <Card style={{ marginTop: '10px' }}>
+          <SettingsChats options={inputs} refresh={onRefresh} />
         </Card>
         {/* 倍率设置 */}
         <Card style={{ marginTop: '10px' }}>
