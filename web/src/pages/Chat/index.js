@@ -20,8 +20,8 @@ const ChatPage = () => {
               if (Array.isArray(chats) && chats.length > 0) {
                   for (let k in chats[id]) {
                       link = chats[id][k];
-                      link = link.replace('{address}', encodeURIComponent(serverAddress));
-                      link = link.replace('{key}', 'sk-' + key);
+                      link = link.replaceAll('{address}', encodeURIComponent(serverAddress));
+                      link = link.replaceAll('{key}', 'sk-' + key);
                   }
               }
           }
@@ -34,8 +34,9 @@ const ChatPage = () => {
   return !isLoading && iframeSrc ? (
     <iframe
       src={iframeSrc}
-      style={{ width: '100%', height: '85vh', border: 'none' }}
+      style={{ width: '100%', height: '100%', border: 'none' }}
       title="Token Frame"
+      allow="camera;microphone"
     />
   ) : (
     <div>
